@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Menu, X, Phone } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import Footer from "@/components/common/Footer";
+import Chatbot from "@/components/common/Chatbot";
+
+const navigation = [
+  { name: 'Services', page: 'Services' },
+  { name: 'Booking', page: 'Booking' },
+  { name: 'Contact', page: 'Contact' },
+];
+
+export default function Layout({ children, currentPageName }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isHomePage = currentPageName === 'Home';
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isHomePage ? 'bg-transparent' : 'bg-white/95 backdrop-blur-md shadow-sm'
+      }`}>
+        <nav className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <div className="flex items-center gap-2">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6955c510981ce005729d3ce2/c8592f301_NextGenLogo.jpg"
+                  alt="NextGen Auto Detailing"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className={`text-xl font-bold ${isHomePage ? 'text-white' : 'text-slate-900'}`}>
+                NextGen Detailing
+              </span>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  to={createPageUrl(item.page)}
+                  className={`text-sm font-medium transition-colors ${
+                    currentPageName === item.page
+                      ? 'text-blue-500'
+                      : isHomePage
+                        ? 'text-white/80 hover:text-white'
+                        : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <a href="tel:6107244026" className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
+                <Phone className="w-4 h-4" />
+                (610) 724-4026
+              </a>
+              <Link to={createPageUrl('Booking')}>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full px-6">
+                  Book Now
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className={isHomePage ? 'text-white' : 'text-slate-900'} />
+              ) : (
+                <Menu className={isHomePage ? 'text-white' : 'text-slate-900'} />
+              )}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white border-t"
+            >
+              <div className="px-6 py-4 space-y-4">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={createPageUrl(item.page)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block py-2 text-base font-medium ${
+                      currentPageName === item.page
+                        ? 'text-blue-500'
+                        : 'text-slate-600'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <a href="tel:6107244026" className="flex items-center gap-2 py-2 text-sm font-medium text-slate-600">
+                  <Phone className="w-4 h-4" />
+                  (610) 724-4026
+                </a>
+                <Link to={createPageUrl('Booking')} onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full mt-4">
+                    Book Now
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Main Content */}
+      <main className={isHomePage ? '' : 'pt-20'}>
+        {children}
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Chatbot */}
+      <Chatbot />
+      </div>
+      );
+      }
